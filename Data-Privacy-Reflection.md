@@ -40,7 +40,7 @@
 
 ---
 
-## 📝 Reflection
+## Reflection
 
 ### What steps can I take to handle data securely in my daily tasks?
 As a data analytics intern, I will have access to user data and internal systems. 
