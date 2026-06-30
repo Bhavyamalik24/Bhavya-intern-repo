@@ -328,3 +328,76 @@ risky actions like deleting and starting over.lex, shared codebases — rather t
 risky actions like deleting and starting over.
 
 ---
+
+## Writing Meaningful Commit Messages
+
+### Research: Good vs Bad Commit Messages
+Looking at commit histories in large open-source projects like React and
+Node.js, a clear pattern emerges. Good commits follow a structure: a short,
+specific summary line (under ~50 characters) written in the imperative mood
+("Fix memory leak in useEffect" not "Fixed a memory leak"), often followed
+by a blank line and more detail if needed explaining *why* the change was
+made, not just *what* changed. Bad commits tend to be vague single words
+like "fix", "update", or "wip" that give no indication of what actually
+changed without opening the diff.
+
+### My Three Test Commits
+
+**1. Vague commit message**
+
+    fixed stuff
+
+This tells a reader nothing. What was fixed? Why? Six months from now,
+even I wouldn't remember what this referred to.
+
+**2. Overly detailed commit message**
+
+    Updated the README.md file to include a new line of text at the bottom 
+    of the file because I wanted to test out different commit message styles 
+    for the Focus Bear Git onboarding task about writing meaningful commit 
+    messages and how they help teams
+
+This is too long for a summary line — it reads like a paragraph rather
+than a commit message. Important information is buried, and it would be
+hard to scan quickly in a `git log` view.
+
+**3. Well-structured commit message**
+
+    Add test line to README for commit message exercise
+
+This is short, specific, in the imperative mood, and immediately tells
+a reader what changed and why — without needing to open the diff.
+
+---
+
+### What makes a good commit message?
+- A short summary line (ideally under 50 characters) written in the
+  imperative mood, e.g. "Fix login bug" not "Fixed login bug" or
+  "Fixes login bug"
+- Specific enough that someone scanning the log understands what changed
+  without opening the diff
+- If more context is needed, a blank line followed by a longer explanation
+  of *why* the change was made, not just what
+- No vague filler words like "stuff", "things", "misc", or "wip" without context
+
+### How does a clear commit message help in team collaboration?
+A clear commit history acts as a readable changelog of the project's
+evolution. When a teammate runs `git log`, they should be able to
+understand what happened and why without needing to ask the original
+author. This is especially valuable when debugging — if a bug appears,
+`git log` and `git blame` become genuinely useful tools for finding the
+relevant change, but only if the messages are meaningful. It also makes
+code review faster, since reviewers can understand the intent of a PR
+just from its commit messages.
+
+### How can poor commit messages cause issues later?
+- They make `git log` and `git blame` far less useful for debugging,
+  since you can't tell what a commit did without inspecting the full diff
+- They slow down code reviews, since reviewers have to guess intent
+- They make it hard to write release notes or changelogs from commit history
+- In a long-running project, vague messages compound over time, turning
+  the commit history into a list of meaningless entries rather than a
+  useful record of the project's evolution
+- They make tools like `git bisect` harder to use effectively, since you
+  can't quickly judge which commit might be responsible for a bug based
+  on its message alone
