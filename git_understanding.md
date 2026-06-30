@@ -401,3 +401,67 @@ just from its commit messages.
 - They make tools like `git bisect` harder to use effectively, since you
   can't quickly judge which commit might be responsible for a bug based
   on its message alone
+
+  ---
+
+  ## Creating & Reviewing Pull Requests
+
+### What is a Pull Request and why is it used?
+A Pull Request (PR) is a formal request to merge changes from one branch
+into another (usually into `main`). It is the standard way developers
+propose changes in a team setting — instead of pushing directly, you open
+a PR so teammates can review the actual code changes, leave comments,
+request edits, and approve before anything becomes part of the shared codebase.
+
+### Hands-on Experiment
+1. Created a new branch called `pr-practice` from `main` on GitHub.
+2. Edited `README.md` on that branch, adding the line
+   "This branch demonstrates the PR workflow," and committed it directly
+   to the branch.
+3. Opened a Pull Request titled "Demonstrate PR workflow for Git onboarding"
+   with a description explaining the purpose of the PR.
+4. Reviewed the PR — checked the file diff to confirm only the intended
+   change was included.
+5. Merged the PR using "Merge pull request" → "Confirm merge."
+6. Deleted the `pr-practice` branch afterwards to keep the repo clean.
+
+### Reviewing an open-source PR
+I looked through merged Pull Requests on the React repository
+(github.com/facebook/react/pulls). I noticed that well-structured PRs
+typically include a clear title describing the change, a description
+explaining the motivation and what was changed, and often a checklist or
+testing notes. Comments on PRs tended to focus on specific lines of code,
+asking clarifying questions or requesting small adjustments before
+approval. Reviewers often left a brief explanation when requesting changes
+rather than just rejecting outright, which made the back-and-forth
+collaborative rather than confrontational.
+
+---
+
+### Why are PRs important in a team workflow?
+PRs create a structured review step before code becomes part of the shared
+codebase. They prevent unreviewed or broken code from reaching `main`,
+give teammates visibility into what is changing and why, and create a
+permanent, searchable record of every change along with the discussion
+that led to it. They also make it easy to run automated tests against
+proposed changes before they are merged.
+
+### What makes a well-structured PR?
+- A clear, specific title that summarises the change
+- A description explaining what changed and why, not just what
+- Small, focused changes rather than huge, sprawling PRs that are hard to review
+- Linking to a related issue when applicable, so the context is connected
+- Clean commit history within the PR (meaningful commit messages, not "fix" x10)
+
+### What did I learn from reviewing an open-source PR?
+I learned that good PRs tell a story — the title and description alone
+should give a reviewer enough context to understand the change before
+even opening the diff. I also learned that code review is genuinely
+collaborative rather than just approval or rejection; reviewers often
+ask questions or suggest alternatives rather than simply blocking a PR.
+This showed me that PRs are as much a communication tool as they are a
+technical mechanism for merging code.
+
+![Merged PR showing pr-practice branch](Screenshot pr-practice.png)
+
+---
