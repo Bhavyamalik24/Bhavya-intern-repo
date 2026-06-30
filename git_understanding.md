@@ -187,53 +187,40 @@ and why — and the staging area is what makes that possible.
 ---
 # Branching & Team Collaboration
 
-## Experiment Recap
-I created a branch (`test-conflict`), made a change to README.md, committed
-it, then switched back to `main`. The change was not visible on `main` —
-confirming that branches are isolated copies of the code until they are
-explicitly merged back in.
+### Hands-on Experiment
+1. Created a new branch called `branch-test` from `main`.
+2. Made a small change to `README.md` on `branch-test` and committed it.
+3. Switched back to `main` and checked the file — the change was **not**
+   present on `main`. This confirmed that a branch is an isolated copy of
+   the code, and changes only affect `main` once they are explicitly merged.
 
 ---
 
-## Reflection
-
 ### Why is pushing directly to main problematic?
-`main` is usually the live, production-ready version of the code — the
-version that real users or the rest of the team depend on. Pushing directly
-to it is risky because:
-- There is no review step, so mistakes or bugs go live immediately
-- Other team members may be relying on `main` being stable, and an
-  unreviewed change could break their work
-- There is no opportunity to catch issues before they affect everyone
-- It removes accountability and visibility — nobody else gets to see what
-  changed before it's already live
-
-Working on a separate branch creates a safe space to experiment and make
-mistakes without affecting the shared, stable codebase.
+`main` is the stable, shared version of the codebase that the whole team
+relies on. Pushing directly to it skips any review process, meaning bugs,
+broken code, or incomplete work can go live immediately and affect everyone
+working from `main` — including production systems if the app is deployed
+from it. It removes the safety net of having a second person check the
+change before it becomes part of the official codebase.
 
 ### How do branches help with reviewing code?
-Branches allow a developer to make changes in isolation, then open a Pull
-Request when the work is ready. This gives teammates the chance to:
-- Review the actual code changes line by line before they go live
-- Leave comments or request changes
-- Run automated tests against the new code before merging
-- Catch bugs, security issues, or style inconsistencies early
-
-This turns coding from a solo, risky activity into a collaborative,
-quality-controlled process. It also creates a clear history of what changed,
-who changed it, and why — which is valuable for debugging issues later.
+Branches let a developer work in isolation without affecting `main`. Once
+the work is ready, it can be opened as a Pull Request, where teammates review
+the actual changes, leave comments, request edits, and run tests before
+anything is merged. This turns development into a collaborative,
+quality-checked process rather than a single person pushing unreviewed
+changes straight to the live codebase.
 
 ### What happens if two people edit the same file on different branches?
-If two people edit *different* parts of the same file on different branches,
-Git can usually merge both changes automatically without any issue.
+If they edit different parts of the file, Git can usually merge both sets
+of changes automatically with no issues. But if they edit the exact same
+lines, Git cannot automatically decide which version is correct, and a
+merge conflict occurs. Git pauses the merge and requires a person to
+manually review both versions and decide what the final content should be —
+which is exactly what I practiced in the separate merge conflict exercise.
 
-However, if both people edit the *same lines* of the same file, Git cannot
-automatically decide which version is correct — this creates a merge
-conflict, exactly like the one I created and resolved earlier in my onboarding.
-Git flags it and requires a human to manually choose which version to keep
-(or combine them). This is exactly why communication within a team matters —
-if two people know they are both about to touch the same file, they can
-coordinate to avoid unnecessary conflicts.
+---
 
 ### Key takeaway
 Branches exist to protect the stability of `main` while still allowing
