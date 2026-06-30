@@ -81,9 +81,9 @@ resolution.
 - In a real project, I would discuss with my teammate before overwriting
   their changes
 
-# 🔀 Git Concepts: Staging vs Committing
+---
 
-## 🔍 Research Summary
+## 1. Staging vs Committing
 
 ### What is Staging?
 Staging is the process of telling Git which changes you want to include in
@@ -101,52 +101,19 @@ snapshot in the Git history. Once committed, that snapshot is part of the
 repo's history and can always be referred back to. A commit is like sealing
 the box and labelling it with a description of what's inside.
 
----
+### Experiment
+1. Modified `README.md` by adding a new line. `git status` showed it as
+   "Changes not staged for commit."
+2. Ran `git add README.md`. `git status` then showed it as "Changes to be
+   committed" — the file was now staged but not yet saved to history.
+3. Ran `git reset HEAD README.md` to unstage it. The file went back to
+   "modified but not staged" — the change was still there, just no longer
+   queued for commit.
+4. Staged it again and ran `git commit -m "Update README with new line"`.
+   `git status` then showed "nothing to commit, working tree clean" —
+   the change was now permanently saved in history.
 
-## 🧪 Experiment
-
-### Step 1: Modified a file
-Modified an existing file in my repo by adding a new line of text.
-Running `git status` showed:
-
-    Changes not staged for commit:
-        modified: README.md
-
-This means Git detected the change but it is not yet staged.
-
-### Step 2: Staged the file
-Ran `git add README.md` (or used VS Code's Source Control panel to
-stage the file by clicking the + icon next to it).
-Running `git status` now showed:
-
-    Changes to be committed:
-        modified: README.md
-
-The file is now in the staging area — ready to be committed but not
-yet saved to history.
-
-### Step 3: Unstaged the file
-Ran `git reset HEAD README.md` to remove the file from the staging area
-without losing the changes.
-Running `git status` showed the file back as "modified but not staged" —
-the changes were still there, just no longer queued for commit.
-
-### Step 4: Committed the file
-Staged the file again with `git add README.md` then committed with:
-
-    git commit -m "Update README with new line"
-
-Running `git status` showed:
-
-    nothing to commit, working tree clean
-
-The changes are now permanently saved in the Git history.
-
----
-
-## Reflection
-
-### What is the difference between staging and committing?
+### Difference between staging and committing
 
 | | Staging | Committing |
 |---|---|---|
@@ -159,13 +126,10 @@ The changes are now permanently saved in the Git history.
 Git separates staging and committing to give developers precise control
 over what goes into each commit. Without a staging area, every modified
 file would automatically be included in the next commit — which is often
-not what you want.
-
-For example, imagine you are fixing a bug and accidentally modify two
-files — one related to the bug fix and one you were just experimenting with.
-The staging area lets you add only the bug fix file to the commit and leave
-the experimental file out. This keeps your commit history clean, focused,
-and meaningful.
+not what you want. For example, if you are fixing a bug and accidentally
+modify two files — one related to the fix and one you were just
+experimenting with — staging lets you commit only the relevant file and
+leave the other out. This keeps commit history clean, focused, and meaningful.
 
 ### When would you want to stage without committing?
 - When you have changed multiple files but only want to commit some of them
@@ -178,14 +142,13 @@ and meaningful.
   that is easy for teammates to review
 
 ### Key takeaway
-The staging area is one of Git's most powerful features because it gives
-you a buffer between making changes and saving them permanently. It
-encourages thoughtful, well-organised commits rather than messy snapshots
-of half-finished work. Good commits tell a clear story of what changed
-and why — and the staging area is what makes that possible.
+The staging area gives a buffer between making changes and saving them
+permanently. It encourages thoughtful, well-organised commits rather than
+messy snapshots of half-finished work.
 
 ---
-# Branching & Team Collaboration
+
+## 2. Branching & Team Collaboration
 
 ### Hands-on Experiment
 1. Created a new branch called `branch-test` from `main`.
@@ -194,15 +157,15 @@ and why — and the staging area is what makes that possible.
    present on `main`. This confirmed that a branch is an isolated copy of
    the code, and changes only affect `main` once they are explicitly merged.
 
----
-
 ### Why is pushing directly to main problematic?
 `main` is the stable, shared version of the codebase that the whole team
 relies on. Pushing directly to it skips any review process, meaning bugs,
 broken code, or incomplete work can go live immediately and affect everyone
 working from `main` — including production systems if the app is deployed
 from it. It removes the safety net of having a second person check the
-change before it becomes part of the official codebase.
+change before it becomes part of the official codebase. In a real project,
+I would never push straight to main — every change should go through a
+branch and a Pull Request first.
 
 ### How do branches help with reviewing code?
 Branches let a developer work in isolation without affecting `main`. Once
@@ -217,10 +180,7 @@ If they edit different parts of the file, Git can usually merge both sets
 of changes automatically with no issues. But if they edit the exact same
 lines, Git cannot automatically decide which version is correct, and a
 merge conflict occurs. Git pauses the merge and requires a person to
-manually review both versions and decide what the final content should be —
-which is exactly what I practiced in the separate merge conflict exercise.
-
----
+manually review both versions and decide what the final content should be.
 
 ### Key takeaway
 Branches exist to protect the stability of `main` while still allowing
@@ -230,94 +190,131 @@ makes collaborative software development possible at scale — without it,
 every change would be a gamble.
 
 ---
-# Advanced Git Commands & When to Use Them
 
-## Commands Tested
+## 3. Merge Conflicts & Conflict Resolution
+
+### What is a Merge Conflict?
+A merge conflict happens when two branches have made different changes to
+the same part of the same file, and Git cannot automatically decide which
+version to keep. Git stops the merge and asks the developer to manually
+resolve the conflict before continuing.
+
+### How I Created and Resolved a Merge Conflict
+1. Created a branch called `test-conflict` from `main`.
+2. Edited `README.md` on `test-conflict`, adding the line:
+   `### This line was added on the test-conflict branch`. Committed it.
+3. Switched back to `main` and edited the same line in `README.md` with
+   different content: `# Bhavya-intern-repo`. Committed that to main.
+4. Created a Pull Request to merge `test-conflict` into `main`. GitHub
+   detected the conflict and flagged it: "This branch has conflicts that
+   must be resolved."
+5. Clicked "Resolve conflicts" in GitHub's web editor. The conflict appeared as:
+
+```
+<<<<<<< main
+# Bhavya-intern-repo
+=======
+### This line was added on the test-conflict branch
+>>>>>>> test-conflict
+```
+
+6. I kept the main branch version, deleted the conflict markers, clicked
+   "Mark as resolved" → "Commit merge" → "Merge pull request."
+7. Deleted the `test-conflict` branch afterwards to keep the repo clean.
+
+### What caused the conflict?
+Editing the same line in the same file on two different branches. When Git
+tried to merge them, it had no way of knowing which version was correct —
+so it flagged it for manual review.
+
+### How did I resolve it?
+Using GitHub's built-in web conflict editor, I compared both versions side
+by side, chose to keep the main branch version as the intentional final
+change, removed the conflict markers, and committed the resolution.
+
+### Key takeaways
+- Merge conflicts are normal and not something to be afraid of
+- They happen when two branches edit the same part of the same file
+- Always read both versions carefully before deciding which to keep —
+  sometimes you need to combine parts of both rather than choosing one
+- Good communication in a team reduces conflicts
+- Deleting branches after merging keeps the repo clean and organised
+
+---
+
+## 4. Advanced Git Commands & When to Use Them
 
 ### `git log`
 **What it does:** Shows the commit history of the repo — each commit's hash,
-author, date, and message. Running `git log --oneline` gives a compact,
-one-line-per-commit view.
+author, date, and message. `git log --oneline` gives a compact view.
 
-**What I observed:** Running this in my repo showed a clear list of my
-recent commits with short messages, giving a quick overview of what had
-changed and when.
+**What I observed:** Running this in my repo showed a clear list of recent
+commits with short messages, giving a quick overview of what changed and when.
 
-**When to use it in a real project:** Essential for understanding the
-history of a project, tracking down when a bug was introduced, or reviewing
-what a teammate changed before a specific date. In long-running projects with
-multiple developers, `git log` is often the first command used to understand
-context before making any change.
-
----
+**When to use it:** Essential for understanding project history, tracking
+down when a bug was introduced, or reviewing what a teammate changed. In
+long-running projects with multiple developers, `git log` is often the
+first command used to understand context before making any change.
 
 ### `git blame <file>`
 **What it does:** Shows, line by line, who last modified each line of a
 file and in which commit.
 
 **What I observed:** Running `git blame README.md` showed each line
-annotated with my commit hash and details, since I have been the only
-contributor so far.
+annotated with the commit hash and author responsible for it.
 
-**When to use it in a real project:** Extremely useful in a team setting
-when you find a bug or confusing piece of code and want to know who wrote
-it and why — so you can ask them directly or understand the context of
-the original commit message.
-
----
+**When to use it:** Useful in a team setting when you find a bug or
+confusing code and want to know who wrote it and why — so you can ask
+them directly or understand the context of the original commit message.
 
 ### `git checkout main -- <file>`
 **What it does:** Restores a specific file back to its state on `main`,
 discarding local uncommitted changes to that file only — without affecting
 any other files you may have changed.
 
-**What I observed:** I added a test line to `README.md`, ran `git status`
-to confirm it was modified, then ran `git checkout main -- README.md`.
-The test line was removed and the file reverted back to the clean main
-version, while any other unrelated changes remained untouched.
+**What I observed:** I added a test line to `README.md`, confirmed it was
+modified with `git status`, then ran `git checkout main -- README.md`. The
+test line was removed and the file reverted to the clean main version,
+while other unrelated changes remained untouched.
 
-**When to use it in a real project:** Useful when you've made unwanted
-or experimental changes to one file and want to discard just that file
-without losing other work in progress. Much safer than discarding all
-changes at once.
-
----
+**When to use it:** Useful when you've made unwanted or experimental
+changes to one file and want to discard just that file without losing
+other work in progress.
 
 ### `git cherry-pick <commit>`
 **What it does:** Applies one specific commit from another branch onto
-your current branch, without merging the entire branch and all its other
-commits.
+your current branch, without merging the entire branch and all its other commits.
 
-**Why I didn't test this hands-on:** Cherry-picking requires a commit to
-exist on a separate branch first, and testing it solo adds complexity without
-much additional learning value beyond understanding the concept.
+**How I tested it:**
+1. Created a branch called `cherry-test` and switched to it.
+2. Edited `README.md`, adding the line "This line is for cherry-pick
+   testing," and committed it — commit hash `5cb79c0`.
+3. Switched back to `main` with `git checkout main`.
+4. Ran `git cherry-pick 5cb79c0`.
+5. Git applied that exact commit onto `main` as a new commit (`be45e81`),
+   without bringing in anything else from the `cherry-test` branch.
+6. Pushed the change to GitHub and force-deleted the `cherry-test` branch
+   with `git branch -D cherry-test` (a normal delete was blocked since the
+   branch wasn't "merged" in the traditional sense — cherry-pick creates a
+   copy of the commit rather than a merge).
 
-**When to use it in a real project:** Very useful in long-running projects
-with multiple developers — for example, if a critical bug fix was committed
-on a feature branch that isn't ready to be merged yet, cherry-pick lets you
-pull just that fix onto `main` immediately without bringing in unfinished
-work from the rest of the branch.
-
----
-
-## Reflection
+**When to use it:** Very useful in long-running projects with multiple
+developers — for example, if a critical bug fix was committed on a feature
+branch that isn't ready to be merged yet, cherry-pick lets you pull just
+that fix onto `main` immediately without bringing in unfinished work from
+the rest of the branch.
 
 ### What surprised me while testing these commands?
-I was surprised by how precise Git's commands are — each one solves a very
-specific, narrow problem rather than being a general-purpose tool. `git
-checkout -- file` only touches one file, `git blame` only shows attribution,
-and `git log` only shows history. This made me realise Git is designed to
-give developers fine-grained control rather than blunt, all-or-nothing actions.
-
-I was also surprised that `git blame` doesn't just show the most recent
-editor — it tracks line-level history, meaning even a single line edited
-months apart from the rest of the file would show its own separate commit
-and author. This level of detail would be incredibly useful for understanding
-the evolution of a complex file in a real team project.
+I was surprised by how precise Git's commands are — each one solves a
+narrow, specific problem rather than being a general-purpose tool.
+`git checkout -- file` only touches one file, `git blame` only shows
+attribution, and `git log` only shows history. I was also surprised that
+cherry-pick creates a brand new commit (with a new hash) on the target
+branch rather than literally moving the original commit — which is why
+Git considered the source branch "not fully merged" even after the
+content had been applied to main.
 
 ### Why these commands matter in long-running, multi-developer projects
-In a project with many contributors over a long period, these commands
-become essential for accountability and debugging:
 - `git log` helps you understand the story of the project
 - `git blame` helps you find who to ask about a confusing piece of code
 - `git checkout -- file` lets you safely undo mistakes without losing
@@ -327,4 +324,7 @@ become essential for accountability and debugging:
 
 Together, these commands give developers precision and confidence when
 working in complex, shared codebases — rather than relying on broad,
+risky actions like deleting and starting over.lex, shared codebases — rather than relying on broad,
 risky actions like deleting and starting over.
+
+---
