@@ -256,6 +256,8 @@ down when a bug was introduced, or reviewing what a teammate changed. In
 long-running projects with multiple developers, `git log` is often the
 first command used to understand context before making any change.
 
+---
+
 ### `git blame <file>`
 **What it does:** Shows, line by line, who last modified each line of a
 file and in which commit.
@@ -266,6 +268,8 @@ annotated with the commit hash and author responsible for it.
 **When to use it:** Useful in a team setting when you find a bug or
 confusing code and want to know who wrote it and why — so you can ask
 them directly or understand the context of the original commit message.
+
+---
 
 ### `git checkout main -- <file>`
 **What it does:** Restores a specific file back to its state on `main`,
@@ -281,7 +285,12 @@ while other unrelated changes remained untouched.
 changes to one file and want to discard just that file without losing
 other work in progress.
 
+---
+
 ### `git cherry-pick <commit>`
+
+![Terminal output showing tested Git commands](Screenshot-commands.png)
+
 **What it does:** Applies one specific commit from another branch onto
 your current branch, without merging the entire branch and all its other commits.
 
@@ -304,6 +313,8 @@ branch that isn't ready to be merged yet, cherry-pick lets you pull just
 that fix onto `main` immediately without bringing in unfinished work from
 the rest of the branch.
 
+---
+
 ### What surprised me while testing these commands?
 I was surprised by how precise Git's commands are — each one solves a
 narrow, specific problem rather than being a general-purpose tool.
@@ -324,7 +335,6 @@ content had been applied to main.
 
 Together, these commands give developers precision and confidence when
 working in complex, shared codebases — rather than relying on broad,
-risky actions like deleting and starting over.lex, shared codebases — rather than relying on broad,
 risky actions like deleting and starting over.
 
 ---
