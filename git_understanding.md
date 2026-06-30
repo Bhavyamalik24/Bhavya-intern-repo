@@ -183,3 +183,61 @@ you a buffer between making changes and saving them permanently. It
 encourages thoughtful, well-organised commits rather than messy snapshots
 of half-finished work. Good commits tell a clear story of what changed
 and why — and the staging area is what makes that possible.
+
+---
+# Branching & Team Collaboration
+
+## Experiment Recap
+I created a branch (`test-conflict`), made a change to README.md, committed
+it, then switched back to `main`. The change was not visible on `main` —
+confirming that branches are isolated copies of the code until they are
+explicitly merged back in.
+
+---
+
+## Reflection
+
+### Why is pushing directly to main problematic?
+`main` is usually the live, production-ready version of the code — the
+version that real users or the rest of the team depend on. Pushing directly
+to it is risky because:
+- There is no review step, so mistakes or bugs go live immediately
+- Other team members may be relying on `main` being stable, and an
+  unreviewed change could break their work
+- There is no opportunity to catch issues before they affect everyone
+- It removes accountability and visibility — nobody else gets to see what
+  changed before it's already live
+
+Working on a separate branch creates a safe space to experiment and make
+mistakes without affecting the shared, stable codebase.
+
+### How do branches help with reviewing code?
+Branches allow a developer to make changes in isolation, then open a Pull
+Request when the work is ready. This gives teammates the chance to:
+- Review the actual code changes line by line before they go live
+- Leave comments or request changes
+- Run automated tests against the new code before merging
+- Catch bugs, security issues, or style inconsistencies early
+
+This turns coding from a solo, risky activity into a collaborative,
+quality-controlled process. It also creates a clear history of what changed,
+who changed it, and why — which is valuable for debugging issues later.
+
+### What happens if two people edit the same file on different branches?
+If two people edit *different* parts of the same file on different branches,
+Git can usually merge both changes automatically without any issue.
+
+However, if both people edit the *same lines* of the same file, Git cannot
+automatically decide which version is correct — this creates a merge
+conflict, exactly like the one I created and resolved earlier in my onboarding.
+Git flags it and requires a human to manually choose which version to keep
+(or combine them). This is exactly why communication within a team matters —
+if two people know they are both about to touch the same file, they can
+coordinate to avoid unnecessary conflicts.
+
+### Key takeaway
+Branches exist to protect the stability of `main` while still allowing
+multiple people to work simultaneously without stepping on each other's
+toes. The combination of branching, pull requests, and code review is what
+makes collaborative software development possible at scale — without it,
+every change would be a gamble.
