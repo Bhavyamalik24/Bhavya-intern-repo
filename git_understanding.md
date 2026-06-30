@@ -241,3 +241,103 @@ multiple people to work simultaneously without stepping on each other's
 toes. The combination of branching, pull requests, and code review is what
 makes collaborative software development possible at scale — without it,
 every change would be a gamble.
+
+---
+# Advanced Git Commands & When to Use Them
+
+## Commands Tested
+
+### `git log`
+**What it does:** Shows the commit history of the repo — each commit's hash,
+author, date, and message. Running `git log --oneline` gives a compact,
+one-line-per-commit view.
+
+**What I observed:** Running this in my repo showed a clear list of my
+recent commits with short messages, giving a quick overview of what had
+changed and when.
+
+**When to use it in a real project:** Essential for understanding the
+history of a project, tracking down when a bug was introduced, or reviewing
+what a teammate changed before a specific date. In long-running projects with
+multiple developers, `git log` is often the first command used to understand
+context before making any change.
+
+---
+
+### `git blame <file>`
+**What it does:** Shows, line by line, who last modified each line of a
+file and in which commit.
+
+**What I observed:** Running `git blame README.md` showed each line
+annotated with my commit hash and details, since I have been the only
+contributor so far.
+
+**When to use it in a real project:** Extremely useful in a team setting
+when you find a bug or confusing piece of code and want to know who wrote
+it and why — so you can ask them directly or understand the context of
+the original commit message.
+
+---
+
+### `git checkout main -- <file>`
+**What it does:** Restores a specific file back to its state on `main`,
+discarding local uncommitted changes to that file only — without affecting
+any other files you may have changed.
+
+**What I observed:** I added a test line to `README.md`, ran `git status`
+to confirm it was modified, then ran `git checkout main -- README.md`.
+The test line was removed and the file reverted back to the clean main
+version, while any other unrelated changes remained untouched.
+
+**When to use it in a real project:** Useful when you've made unwanted
+or experimental changes to one file and want to discard just that file
+without losing other work in progress. Much safer than discarding all
+changes at once.
+
+---
+
+### `git cherry-pick <commit>`
+**What it does:** Applies one specific commit from another branch onto
+your current branch, without merging the entire branch and all its other
+commits.
+
+**Why I didn't test this hands-on:** Cherry-picking requires a commit to
+exist on a separate branch first, and testing it solo adds complexity without
+much additional learning value beyond understanding the concept.
+
+**When to use it in a real project:** Very useful in long-running projects
+with multiple developers — for example, if a critical bug fix was committed
+on a feature branch that isn't ready to be merged yet, cherry-pick lets you
+pull just that fix onto `main` immediately without bringing in unfinished
+work from the rest of the branch.
+
+---
+
+## Reflection
+
+### What surprised me while testing these commands?
+I was surprised by how precise Git's commands are — each one solves a very
+specific, narrow problem rather than being a general-purpose tool. `git
+checkout -- file` only touches one file, `git blame` only shows attribution,
+and `git log` only shows history. This made me realise Git is designed to
+give developers fine-grained control rather than blunt, all-or-nothing actions.
+
+I was also surprised that `git blame` doesn't just show the most recent
+editor — it tracks line-level history, meaning even a single line edited
+months apart from the rest of the file would show its own separate commit
+and author. This level of detail would be incredibly useful for understanding
+the evolution of a complex file in a real team project.
+
+### Why these commands matter in long-running, multi-developer projects
+In a project with many contributors over a long period, these commands
+become essential for accountability and debugging:
+- `git log` helps you understand the story of the project
+- `git blame` helps you find who to ask about a confusing piece of code
+- `git checkout -- file` lets you safely undo mistakes without losing
+  unrelated work
+- `git cherry-pick` lets you move urgent fixes between branches without
+  disrupting larger, unfinished work
+
+Together, these commands give developers precision and confidence when
+working in complex, shared codebases — rather than relying on broad,
+risky actions like deleting and starting over.
