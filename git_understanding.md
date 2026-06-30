@@ -189,10 +189,6 @@ toes. The combination of branching, pull requests, and code review is what
 makes collaborative software development possible at scale — without it,
 every change would be a gamble.
 
----
-
-## 3. Merge Conflicts & Conflict Resolution
-
 ### What is a Merge Conflict?
 A merge conflict happens when two branches have made different changes to
 the same part of the same file, and Git cannot automatically decide which
@@ -242,7 +238,7 @@ change, removed the conflict markers, and committed the resolution.
 
 ---
 
-## 4. Advanced Git Commands & When to Use Them
+## 3. Advanced Git Commands & When to Use Them
 
 ### `git log`
 **What it does:** Shows the commit history of the repo — each commit's hash,
@@ -339,7 +335,7 @@ risky actions like deleting and starting over.
 
 ---
 
-## Writing Meaningful Commit Messages
+## 4. Writing Meaningful Commit Messages
 
 ### Research: Good vs Bad Commit Messages
 Looking at commit histories in large open-source projects like React and
@@ -414,7 +410,7 @@ just from its commit messages.
 
   ---
 
-  ## Creating & Reviewing Pull Requests
+## 5. Creating & Reviewing Pull Requests
 
 ### What is a Pull Request and why is it used?
 A Pull Request (PR) is a formal request to merge changes from one branch
