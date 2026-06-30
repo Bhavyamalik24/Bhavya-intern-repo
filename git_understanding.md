@@ -189,52 +189,18 @@ toes. The combination of branching, pull requests, and code review is what
 makes collaborative software development possible at scale — without it,
 every change would be a gamble.
 
-### What is a Merge Conflict?
-A merge conflict happens when two branches have made different changes to
-the same part of the same file, and Git cannot automatically decide which
-version to keep. Git stops the merge and asks the developer to manually
-resolve the conflict before continuing.
+### Hands-on Experiment
 
-### How I Created and Resolved a Merge Conflict
-1. Created a branch called `test-conflict` from `main`.
-2. Edited `README.md` on `test-conflict`, adding the line:
-   `### This line was added on the test-conflict branch`. Committed it.
-3. Switched back to `main` and edited the same line in `README.md` with
-   different content: `# Bhavya-intern-repo`. Committed that to main.
-4. Created a Pull Request to merge `test-conflict` into `main`. GitHub
-   detected the conflict and flagged it: "This branch has conflicts that
-   must be resolved."
-5. Clicked "Resolve conflicts" in GitHub's web editor. The conflict appeared as:
+![Branches list showing branch-test](Screenshot-branches.png)
 
-```
-<<<<<<< main
-# Bhavya-intern-repo
-=======
-### This line was added on the test-conflict branch
->>>>>>> test-conflict
-```
+![Commit made on branch-test, confirmed not present on main](Screenshot-branch-commit.png)
 
-6. I kept the main branch version, deleted the conflict markers, clicked
-   "Mark as resolved" → "Commit merge" → "Merge pull request."
-7. Deleted the `test-conflict` branch afterwards to keep the repo clean.
-
-### What caused the conflict?
-Editing the same line in the same file on two different branches. When Git
-tried to merge them, it had no way of knowing which version was correct —
-so it flagged it for manual review.
-
-### How did I resolve it?
-Using GitHub's built-in web conflict editor, I compared both versions side
-by side, chose to keep the main branch version as the intentional final
-change, removed the conflict markers, and committed the resolution.
-
-### Key takeaways
-- Merge conflicts are normal and not something to be afraid of
-- They happen when two branches edit the same part of the same file
-- Always read both versions carefully before deciding which to keep —
-  sometimes you need to combine parts of both rather than choosing one
-- Good communication in a team reduces conflicts
-- Deleting branches after merging keeps the repo clean and organised
+1. Created a new branch called `branch-test` from `main` directly on GitHub.
+2. Edited `README.md` on `branch-test`, adding the line "This line was 
+   added on branch-test to demonstrate branching," and committed it 
+   directly to the branch.
+3. Switched back to `main` and confirmed the change was **not** present — 
+   proving the branch was an isolated copy of the code until merged.
 
 ---
 
