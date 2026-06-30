@@ -80,3 +80,106 @@ resolution.
 - Deleting branches after merging keeps the repo clean and organised
 - In a real project, I would discuss with my teammate before overwriting
   their changes
+
+# 🔀 Git Concepts: Staging vs Committing
+
+## 🔍 Research Summary
+
+### What is Staging?
+Staging is the process of telling Git which changes you want to include in
+your next commit. When you modify a file, Git sees it as "modified" but does
+not automatically include it in the next commit. You have to explicitly stage
+it using `git add <file>` or the equivalent in your Git client.
+
+Think of staging as putting items into a box before sealing it. You can
+add and remove items from the box as many times as you want before you
+finally seal it (commit).
+
+### What is Committing?
+Committing is the process of permanently saving the staged changes as a
+snapshot in the Git history. Once committed, that snapshot is part of the
+repo's history and can always be referred back to. A commit is like sealing
+the box and labelling it with a description of what's inside.
+
+---
+
+## 🧪 Experiment
+
+### Step 1: Modified a file
+Modified an existing file in my repo by adding a new line of text.
+Running `git status` showed:
+
+    Changes not staged for commit:
+        modified: README.md
+
+This means Git detected the change but it is not yet staged.
+
+### Step 2: Staged the file
+Ran `git add README.md` (or used VS Code's Source Control panel to
+stage the file by clicking the + icon next to it).
+Running `git status` now showed:
+
+    Changes to be committed:
+        modified: README.md
+
+The file is now in the staging area — ready to be committed but not
+yet saved to history.
+
+### Step 3: Unstaged the file
+Ran `git reset HEAD README.md` to remove the file from the staging area
+without losing the changes.
+Running `git status` showed the file back as "modified but not staged" —
+the changes were still there, just no longer queued for commit.
+
+### Step 4: Committed the file
+Staged the file again with `git add README.md` then committed with:
+
+    git commit -m "Update README with new line"
+
+Running `git status` showed:
+
+    nothing to commit, working tree clean
+
+The changes are now permanently saved in the Git history.
+
+---
+
+## Reflection
+
+### What is the difference between staging and committing?
+
+| | Staging | Committing |
+|---|---|---|
+| What it does | Marks changes to include in next commit | Permanently saves staged changes to history |
+| Reversible? | Yes — easy to unstage | Yes but more complex to undo |
+| Git command | `git add <file>` | `git commit -m "message"` |
+| Analogy | Putting items in a box | Sealing and labelling the box |
+
+### Why does Git separate these two steps?
+Git separates staging and committing to give developers precise control
+over what goes into each commit. Without a staging area, every modified
+file would automatically be included in the next commit — which is often
+not what you want.
+
+For example, imagine you are fixing a bug and accidentally modify two
+files — one related to the bug fix and one you were just experimenting with.
+The staging area lets you add only the bug fix file to the commit and leave
+the experimental file out. This keeps your commit history clean, focused,
+and meaningful.
+
+### When would you want to stage without committing?
+- When you have changed multiple files but only want to commit some of them
+- When you want to review exactly what will be committed before finalising
+- When you are grouping related changes together before committing them
+  as one logical unit
+- When you want to pause mid-task, stage what is done, and continue working
+  before making the final commit
+- When collaborating — staging lets you prepare a clean, focused commit
+  that is easy for teammates to review
+
+### Key takeaway
+The staging area is one of Git's most powerful features because it gives
+you a buffer between making changes and saving them permanently. It
+encourages thoughtful, well-organised commits rather than messy snapshots
+of half-finished work. Good commits tell a clear story of what changed
+and why — and the staging area is what makes that possible.
