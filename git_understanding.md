@@ -462,6 +462,6 @@ ask questions or suggest alternatives rather than simply blocking a PR.
 This showed me that PRs are as much a communication tool as they are a
 technical mechanism for merging code.
 
-![Merged PR showing pr-practice branch](Screenshot pr-practice.png)
+![Merged PR showing pr-practice branch](Screenshot-pr-practice.png)
 
 ---
