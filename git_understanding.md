@@ -437,3 +437,66 @@ technical mechanism for merging code.
 ![Merged PR showing pr-practice branch](Screenshot-pr-practice.png)
 
 ---
+
+## Debugging with `git bisect`
+
+### What does `git bisect` do?
+`git bisect` is a binary search tool for finding which commit introduced
+a bug. Instead of checking every commit one by one, you tell Git a known
+"good" commit (before the bug existed) and a known "bad" commit (where
+the bug exists). Git then automatically checks out commits in between,
+asking you to mark each one as "good" or "bad," narrowing down the search
+in roughly log(n) steps instead of checking every commit individually.
+
+### Test Scenario
+
+![Terminal output showing git bisect finding the bad commit](Screenshot-bisect.png)
+
+1. Created a test file `bisect_test.txt` and made 5 commits:
+   - Commit 1 (`fec2dc8`): `status: working`
+   - Commit 2 (`66ad0a4`): `status: working, version: 2` (still working)
+   - Commit 3 (`72373e1`): `status: broken, version: 2` (bug introduced)
+   - Commit 4 (`cc514cd`): empty commit
+   - Commit 5 (`b388877`): empty commit
+
+2. Ran `git bisect start`, then `git bisect bad` to mark the current
+   commit (HEAD) as bad, then `git bisect good fec2dc8` to mark Commit 1
+   as good.
+
+3. Git automatically checked out a middle commit (`72373e1`, Commit 3).
+   Checked the file with `type bisect_test.txt` — it showed
+   `status: broken`. Marked it with `git bisect bad`.
+
+4. Git then checked out `66ad0a4` (Commit 2) — "0 revisions left to test."
+   Checked the file again — it showed `status: working`. Marked it with
+   `git bisect good`.
+
+5. Git immediately reported:
+```
+   72373e13f34dcd7b7a3cefab1874e626613aa9b0 is the first bad commit
+   commit 72373e13f34dcd7b7a3cefab1874e626613aa9b0
+   Commit 3: bug introduced here
+```
+   This exactly matched the commit I knew had introduced the bug,
+   confirming bisect worked correctly.
+
+6. Ran `git bisect reset` to end the session and return to the latest commit.
+
+### When would you use it in a real-world debugging situation?
+`git bisect` is most useful in a long-running project when a bug is
+discovered but it's unclear when it was introduced — for example, a test
+that used to pass is now failing, but nobody knows which of the last 50
+commits broke it. Instead of manually checking out and testing each commit
+one by one, bisect narrows the search dramatically. It can even be
+automated with `git bisect run <test-script>` so Git runs an automated
+test at each step and finds the culprit without any manual checking at all.
+
+### How does it compare to manually reviewing commits?
+Manually reviewing commits means checking each one in order until you find
+the bug — which is slow and scales poorly. With 100 commits between a known
+good and bad state, you might need to check up to 100 commits manually.
+`git bisect` instead uses a binary search approach, so the same 100 commits
+would only need about 7 checks (log2(100) ≈ 7) to find the exact one
+responsible. This makes it dramatically faster, especially in large
+projects with long commit histories, and removes the guesswork of trying
+to manually narrow down where to start looking.
