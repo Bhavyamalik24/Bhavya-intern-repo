@@ -117,3 +117,79 @@ def average_within_range(min_value: float, max_value: float, numbers: list) -> f
   and approachable, even to developers who are new to the project
 - Maintainability is really about empathy — writing code that your future
   self or a teammate can work with confidently
+
+  ---
+
+## Code Formatting & Style Guides
+
+### Research: Why is code formatting important?
+Consistent code formatting makes a codebase feel unified and professional,
+regardless of how many developers have worked on it. When everyone follows
+the same style guide, code reviews become faster because reviewers can
+focus on logic and functionality rather than debating whether to use single
+or double quotes. Formatting tools like ESLint and Prettier remove
+subjective style decisions entirely by enforcing rules automatically —
+meaning developers never have to think about spacing or semicolons again,
+they just write code and let the tools handle the rest.
+
+The Airbnb JavaScript Style Guide is one of the most widely adopted style
+guides in the industry. Key rules include:
+- Use `const` by default, `let` when reassignment is needed, never `var`
+- Always use semicolons
+- Use single quotes for strings
+- Use arrow functions for callbacks
+- Always use strict equality (`===` instead of `==`)
+- Use meaningful, descriptive variable names
+
+### Tools Installed
+- **ESLint** (by Microsoft) — installed via VS Code Extensions
+- **Prettier - Code formatter** (by Prettier) — installed via VS Code Extensions
+
+### Test File: Before Formatting
+```javascript
+const x=1
+var y =2
+function add(a,b){
+return a+b
+}
+console.log(add(x,y))
+```
+![Code before formatting showing ESLint warnings and style issues](Screenshot-before-formatting.png)
+
+### Test File: After Prettier & ESLint
+```javascript
+const x = 1;
+const y = 2;
+function add(a, b) {
+  return a + b;
+}
+console.log(add(x, y));
+```
+![Code after Prettier and ESLint formatting applied](Screenshot-after-formatting.png)
+
+### What issues did the linter and formatter detect?
+- **Missing spaces** around operators (`x=1` → `x = 1`)
+- **Missing semicolons** at the end of every statement
+- **Missing spaces** after commas in function parameters (`add(a,b)` →
+  `add(a, b)`)
+- **Missing indentation** inside the function body
+- **Use of `var`** — ESLint flagged this as a violation of the Airbnb
+  style guide, suggesting `const` instead since `y` is never reassigned
+- **Missing space** before the opening brace of the function (`){` → `) {`)
+
+### Did formatting the code make it easier to read?
+Yes — significantly. The before version looked rushed and inconsistent,
+making it harder to scan quickly. The after version has clear, consistent
+spacing, proper indentation, and explicit semicolons that make the
+structure of the code immediately obvious. Even for a simple 6-line
+function, the difference in readability was noticeable. In a larger
+codebase with hundreds of files, consistent formatting like this would
+make navigating and understanding unfamiliar code much faster.
+
+### Key takeaway
+Prettier handles formatting (spacing, semicolons, indentation) while ESLint
+handles code quality (catching `var` usage, undefined variables, missing
+returns). Used together, they act as an automated first line of code review
+— catching style and quality issues before a human reviewer ever sees the
+code. Setting these up early in a project saves significant time and
+prevents style inconsistencies from accumulating over time.
