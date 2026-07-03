@@ -770,3 +770,175 @@ being restructured. Guard clauses, lookup tables, and early returns are
 powerful tools for flattening nested logic into something linear and
 readable. The goal of refactoring for simplicity is not to reduce line
 count, it is to reduce the mental effort required to understand the code.
+
+---
+
+## Handling Errors & Edge Cases
+
+### Research: Error Handling Strategies
+
+**Guard Clauses**
+Guard clauses are early return statements at the top of a function that
+handle invalid inputs or edge cases immediately, before the main logic
+runs. They flatten deeply nested code and make the "happy path" clear.
+
+**Try/Except Blocks**
+Wrap code that might fail (file reading, API calls, type conversions) in
+try/except blocks to catch and handle exceptions gracefully rather than
+crashing the program.
+
+**Input Validation**
+Check that inputs are of the expected type, within valid ranges, and not
+None/empty before processing them.
+
+**Meaningful Error Messages**
+Raise errors or return messages that actually explain what went wrong and
+what the valid input should benot just "error" or "invalid input."
+
+**Edge Cases to Always Consider**
+- None/null values
+- Empty strings or lists
+- Zero or negative numbers where only positive values make sense
+- Division by zero
+- Unexpected data types
+
+---
+
+### ❌ Original Code Without Error Handling
+
+```python
+def calculate_average_score(scores, passing_threshold):
+    total = sum(scores)
+    average = total / len(scores)
+    passing = [s for s in scores if s >= passing_threshold]
+    pass_rate = len(passing) / len(scores) * 100
+    return {
+        "average": round(average, 2),
+        "pass_rate": round(pass_rate, 2),
+        "highest": max(scores),
+        "lowest": min(scores)
+    }
+```
+
+### What was wrong with the original code?
+- **No check for empty list:** If `scores` is empty, `len(scores)` is 0,
+  causing a `ZeroDivisionError` on the very first line
+- **No type validation:** If `scores` contains strings or None values,
+  `sum(scores)` will throw a `TypeError`
+- **No range validation:** Scores below 0 or above 100 are accepted
+  without question, producing meaningless results silently
+- **No threshold validation:** A negative `passing_threshold` or one
+  above 100 would produce nonsensical pass rates without any warning
+- **Silent failures:** None of these issues produce helpful error messages
+  — the program just crashes with a cryptic Python traceback
+
+---
+
+### ✅ Refactored With Proper Error Handling
+
+```python
+def calculate_average_score(scores: list, passing_threshold: float) -> dict:
+    """
+    Calculate statistics for a list of scores.
+
+    Args:
+        scores: A list of numeric scores between 0 and 100.
+        passing_threshold: The minimum score required to pass (0-100).
+
+    Returns:
+        A dictionary containing average, pass rate, highest, and lowest scores.
+
+    Raises:
+        TypeError: If scores is not a list or contains non-numeric values.
+        ValueError: If scores is empty, any score is out of range, or
+                    passing_threshold is invalid.
+    """
+    # Guard clause: validate input types
+    if not isinstance(scores, list):
+        raise TypeError(f"Expected a list of scores, got {type(scores).__name__}")
+
+    if not isinstance(passing_threshold, (int, float)):
+        raise TypeError(
+            f"passing_threshold must be a number, got {type(passing_threshold).__name__}"
+        )
+
+    # Guard clause: validate list is not empty
+    if not scores:
+        raise ValueError("scores list cannot be empty")
+
+    # Guard clause: validate all scores are numeric and in range
+    for i, score in enumerate(scores):
+        if not isinstance(score, (int, float)):
+            raise TypeError(
+                f"Score at index {i} must be a number, got {type(score).__name__}"
+            )
+        if not 0 <= score <= 100:
+            raise ValueError(
+                f"Score at index {i} is {score} — scores must be between 0 and 100"
+            )
+
+    # Guard clause: validate passing threshold is in range
+    if not 0 <= passing_threshold <= 100:
+        raise ValueError(
+            f"passing_threshold must be between 0 and 100, got {passing_threshold}"
+        )
+
+    # Main logic — only runs if all inputs are valid
+    total = sum(scores)
+    average = total / len(scores)
+    passing = [s for s in scores if s >= passing_threshold]
+    pass_rate = len(passing) / len(scores) * 100
+
+    return {
+        "average": round(average, 2),
+        "pass_rate": round(pass_rate, 2),
+        "highest": max(scores),
+        "lowest": min(scores)
+    }
+
+
+# Example usage with error handling
+if __name__ == "__main__":
+    try:
+        result = calculate_average_score([85, 92, 78, 45, 60], passing_threshold=70)
+        print(result)
+    except (TypeError, ValueError) as e:
+        print(f"Could not calculate scores: {e}")
+```
+
+---
+
+### 📝 Reflection
+
+### What was the issue with the original code?
+The original function assumed perfect inputs every time. In a real
+application, data rarely arrives perfectly formatted — users submit
+empty forms, APIs return unexpected types, and edge cases like empty
+lists are common. The original code would crash silently with a
+cryptic Python error rather than explaining what went wrong, making
+debugging unnecessarily difficult.
+
+### How does handling errors improve reliability?
+Proper error handling makes code significantly more reliable in three ways:
+
+1. **Fail fast and clearly:** Guard clauses catch invalid inputs at the
+   entry point and immediately raise a descriptive error. This prevents
+   bad data from silently propagating through the system and causing a
+   confusing crash somewhere deeper in the code.
+
+2. **Protect the happy path:** By handling all edge cases at the top of
+   the function, the main logic at the bottom is clean and readable —
+   you can trust that by the time you reach `total = sum(scores)`, the
+   inputs are guaranteed to be valid.
+
+3. **Better user and developer experience:** Meaningful error messages
+   like "Score at index 2 is -5 — scores must be between 0 and 100"
+   make it immediately obvious what went wrong and how to fix it,
+   rather than leaving developers guessing from a generic traceback.
+
+### Key takeaway
+Robust code does not just handle the expected case — it anticipates what
+could go wrong and fails gracefully with clear, actionable messages.
+Guard clauses are the most effective tool for this: handle the invalid
+cases first, then write the main logic with confidence that inputs are
+safe to use.
