@@ -3,7 +3,7 @@
 ## Core Principles of Clean Code
 
 ### 1. Simplicity
-Keep code as simple as possible — solve the problem in the most
+Keep code as simple as possible, solve the problem in the most
 straightforward way without adding unnecessary complexity. Simple code
 is easier to test, debug, and maintain. If you find yourself writing
 something clever, ask whether a simpler solution exists.
@@ -482,5 +482,148 @@ be understood, tested, and modified independently. The overall structure
 is immediately obvious, a new developer could read `process_order` and
 understand the full workflow in seconds, then dive into any individual
 function only when needed.
+
+---
+
+## Avoiding Code Duplication (DRY Principle)
+
+### Research: The DRY Principle
+"Don't Repeat Yourself" (DRY) means that every piece of knowledge or
+logic in a system should have a single, unambiguous representation.
+When the same logic appears in multiple places, any change or bug fix
+has to be made in every copy — and it's easy to miss one, introducing
+inconsistencies. DRY code centralises logic so that a change only needs
+to be made in one place.
+
+---
+
+### ❌ Example of Duplicated Code
+
+```python
+def send_welcome_email(user_email, user_name):
+    subject = "Welcome to Focus Bear!"
+    greeting = f"Hi {user_name},"
+    body = "Thanks for signing up. We're excited to have you on board."
+    footer = "The Focus Bear Team"
+    message = f"{greeting}\n\n{body}\n\n{footer}"
+    print(f"Sending to {user_email}:")
+    print(f"Subject: {subject}")
+    print(message)
+
+
+def send_password_reset_email(user_email, user_name):
+    subject = "Reset Your Focus Bear Password"
+    greeting = f"Hi {user_name},"
+    body = "Click the link below to reset your password."
+    footer = "The Focus Bear Team"
+    message = f"{greeting}\n\n{body}\n\n{footer}"
+    print(f"Sending to {user_email}:")
+    print(f"Subject: {subject}")
+    print(message)
+
+
+def send_cancellation_email(user_email, user_name):
+    subject = "Sorry to See You Go"
+    greeting = f"Hi {user_name},"
+    body = "Your account has been cancelled. We hope to see you again."
+    footer = "The Focus Bear Team"
+    message = f"{greeting}\n\n{body}\n\n{footer}"
+    print(f"Sending to {user_email}:")
+    print(f"Subject: {subject}")
+    print(message)
+```
+
+### Why this is problematic
+- The email formatting logic (`greeting`, `footer`, `message` structure,
+  and the two `print` statements) is identical in all three functions
+- If the footer changes from "The Focus Bear Team" to "Focus Bear Support",
+  it needs to be updated in three places and it's easy to miss one
+- If the email sending mechanism changes (e.g. from `print` to an actual
+  API call), every function needs to be updated individually
+- Adding a fourth email type means copying and pasting the same structure
+  again, making the problem worse
+
+---
+
+### ✅ Refactored DRY Version
+
+```python
+def send_email(user_email: str, user_name: str, subject: str, body: str) -> None:
+    """
+    Send a formatted email to a user.
+
+    Args:
+        user_email: The recipient's email address.
+        user_name: The recipient's name for the greeting.
+        subject: The email subject line.
+        body: The main content of the email.
+    """
+    greeting = f"Hi {user_name},"
+    footer = "The Focus Bear Team"
+    message = f"{greeting}\n\n{body}\n\n{footer}"
+    print(f"Sending to {user_email}:")
+    print(f"Subject: {subject}")
+    print(message)
+
+
+def send_welcome_email(user_email: str, user_name: str) -> None:
+    send_email(
+        user_email,
+        user_name,
+        subject="Welcome to Focus Bear!",
+        body="Thanks for signing up. We're excited to have you on board."
+    )
+
+
+def send_password_reset_email(user_email: str, user_name: str) -> None:
+    send_email(
+        user_email,
+        user_name,
+        subject="Reset Your Focus Bear Password",
+        body="Click the link below to reset your password."
+    )
+
+
+def send_cancellation_email(user_email: str, user_name: str) -> None:
+    send_email(
+        user_email,
+        user_name,
+        subject="Sorry to See You Go",
+        body="Your account has been cancelled. We hope to see you again."
+    )
+```
+
+---
+
+### 📝 Reflection
+
+### What were the issues with duplicated code?
+The original version repeated the same email formatting and sending logic
+in every function. This meant:
+- A change to the footer, greeting format, or sending mechanism required
+  updating three separate places
+- Each copy was a potential source of inconsistency, one function could
+  accidentally end up with a different footer or format
+- Adding new email types would continue to spread the duplication further
+- The functions were harder to read because the unique part (the subject
+  and body) was buried inside repeated boilerplate
+
+### How did refactoring improve maintainability?
+The refactored version centralises all email formatting and sending logic
+in a single `send_email` function. Now:
+- Changing the footer means updating one line in one place
+- Changing the sending mechanism (e.g. integrating a real email API) only
+  requires editing `send_email`, all other functions automatically benefit
+- Adding a new email type is as simple as writing a two-line function that
+  calls `send_email` with a new subject and body
+- Each function now clearly shows only what makes it unique, the subject
+  and body, making the intent of each email type immediately obvious
+
+### Key takeaway
+DRY is not just about reducing lines of code — it is about reducing the
+number of places where a piece of knowledge or logic lives. Every
+duplication is a future maintenance burden and a potential source of
+inconsistency. When logic is centralised, the codebase becomes more
+reliable, easier to change, and easier to understand.
 
 ---
