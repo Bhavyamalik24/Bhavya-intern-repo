@@ -320,3 +320,167 @@ why, without reading the function body at all. The original version
 required reading every line just to understand the basic concept.
 
 ---
+
+## Writing Small, Focused Functions
+
+### Research: Best Practices
+- Each function should do **one thing and do it well** (Single
+  Responsibility Principle)
+- If you need to use "and" to describe what a function does, it probably
+  does too much — split it
+- Functions should be short enough to fit on one screen
+- Small functions are easier to test, debug, reuse, and understand
+- A well-named small function eliminates the need for comments explaining
+  what a block of code does
+
+---
+
+### ❌ Example of a Large, Unfocused Function
+
+```python
+def process_order(order):
+    # Validate order
+    if not order.get("items"):
+        print("Error: No items in order")
+        return None
+    if not order.get("customer_email"):
+        print("Error: No customer email")
+        return None
+    total = 0
+    for item in order["items"]:
+        if item["quantity"] <= 0:
+            print(f"Error: Invalid quantity for {item['name']}")
+            return None
+        total += item["price"] * item["quantity"]
+    if order.get("discount"):
+        if order["discount"] > 50:
+            print("Error: Discount cannot exceed 50%")
+            return None
+        total = total * (1 - order["discount"] / 100)
+    tax = total * 0.1
+    total_with_tax = total + tax
+    email_body = f"Dear customer, your order total is ${total_with_tax:.2f}"
+    print(f"Sending email to {order['customer_email']}: {email_body}")
+    receipt = {
+        "customer": order["customer_email"],
+        "total": total_with_tax,
+        "tax": tax,
+        "items": order["items"]
+    }
+    print(f"Receipt generated: {receipt}")
+    return receipt
+```
+
+### Why this is problematic
+- The function does at least five different things: validates the order,
+  calculates the total, applies a discount, calculates tax, sends an
+  email, and generates a receipt
+- It is over 30 lines long and hard to scan
+- Testing any single part (e.g. discount logic) requires running the
+  entire function
+- If the email sending breaks, the whole function fails
+- Adding new functionality (e.g. a loyalty points system) means editing
+  an already complex function and risking breaking other parts
+
+---
+
+### ✅ Refactored into Small, Focused Functions
+
+```python
+def validate_order(order: dict) -> bool:
+    """Check that the order has required fields and valid quantities."""
+    if not order.get("items"):
+        print("Error: No items in order")
+        return False
+    if not order.get("customer_email"):
+        print("Error: No customer email")
+        return False
+    for item in order["items"]:
+        if item["quantity"] <= 0:
+            print(f"Error: Invalid quantity for {item['name']}")
+            return False
+    return True
+
+
+def calculate_subtotal(items: list) -> float:
+    """Calculate the total price of all items before discount and tax."""
+    return sum(item["price"] * item["quantity"] for item in items)
+
+
+def apply_discount(subtotal: float, discount_percent: float) -> float:
+    """Apply a percentage discount to the subtotal."""
+    if discount_percent > 50:
+        print("Error: Discount cannot exceed 50%")
+        return subtotal
+    return subtotal * (1 - discount_percent / 100)
+
+
+def calculate_total_with_tax(subtotal: float, tax_rate: float = 0.1) -> tuple:
+    """Calculate tax and return the final total with tax included."""
+    tax = subtotal * tax_rate
+    return subtotal + tax, tax
+
+
+def send_order_confirmation(email: str, total: float) -> None:
+    """Send an order confirmation email to the customer."""
+    email_body = f"Dear customer, your order total is ${total:.2f}"
+    print(f"Sending email to {email}: {email_body}")
+
+
+def generate_receipt(order: dict, total: float, tax: float) -> dict:
+    """Generate and return a receipt dictionary for the order."""
+    receipt = {
+        "customer": order["customer_email"],
+        "total": total,
+        "tax": tax,
+        "items": order["items"]
+    }
+    print(f"Receipt generated: {receipt}")
+    return receipt
+
+
+def process_order(order: dict) -> dict | None:
+    """
+    Process a customer order by validating, calculating totals,
+    sending confirmation, and generating a receipt.
+    """
+    if not validate_order(order):
+        return None
+
+    subtotal = calculate_subtotal(order["items"])
+
+    if order.get("discount"):
+        subtotal = apply_discount(subtotal, order["discount"])
+
+    total, tax = calculate_total_with_tax(subtotal)
+    send_order_confirmation(order["customer_email"], total)
+    return generate_receipt(order, total, tax)
+```
+
+---
+
+### 📝 Reflection
+
+### Why is breaking down functions beneficial?
+- **Easier to test:** Each small function can be tested independently
+  you can test `apply_discount` without needing a full order object
+- **Easier to debug:** When something breaks, the error points to a
+  specific, small function rather than a 30-line monster
+- **Easier to reuse:** `calculate_subtotal` or `send_order_confirmation`
+  can be called from other parts of the codebase without duplicating logic
+- **Easier to read:** `process_order` now reads like a clear summary of
+  steps rather than a wall of mixed concerns
+- **Easier to extend:** Adding loyalty points just means adding one new
+  function and calling it in `process_order` — no risk of breaking
+  existing logic
+
+### How did refactoring improve the structure of the code?
+The refactored `process_order` function now reads like a plain English
+checklist of steps: validate, calculate, apply discount, add tax, send
+email, generate receipt. Each step is a clearly named function that can
+be understood, tested, and modified independently. The overall structure
+is immediately obvious, a new developer could read `process_order` and
+understand the full workflow in seconds, then dive into any individual
+function only when needed.
+
+---
