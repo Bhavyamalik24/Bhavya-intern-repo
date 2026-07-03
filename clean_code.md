@@ -627,3 +627,146 @@ inconsistency. When logic is centralised, the codebase becomes more
 reliable, easier to change, and easier to understand.
 
 ---
+
+## Refactoring Code for Simplicity
+
+### Research: Common Refactoring Techniques
+- **Extract Method:** Pull repeated or complex logic into its own function
+- **Replace Temp with Query:** Instead of storing intermediate results in
+  variables, call a function directly
+- **Simplify Conditionals:** Replace complex if/else chains with guard
+  clauses, dictionaries, or built-in functions
+- **Remove Dead Code:** Delete unused variables, functions, and comments
+  that no longer apply
+- **Replace Magic Numbers:** Replace unexplained numbers with named constants
+- **Flatten Nested Logic:** Reduce deeply nested if/else blocks by
+  returning early or restructuring conditions
+
+---
+
+### ❌ Overly Complicated Code
+
+```python
+def get_user_discount(user):
+    discount = 0
+    if user is not None:
+        if user.get("is_active") == True:
+            if user.get("membership") is not None:
+                if user["membership"] == "gold":
+                    if user.get("years") is not None:
+                        if user["years"] >= 3:
+                            discount = 30
+                        else:
+                            discount = 20
+                elif user["membership"] == "silver":
+                    if user.get("years") is not None:
+                        if user["years"] >= 3:
+                            discount = 15
+                        else:
+                            discount = 10
+                elif user["membership"] == "bronze":
+                    discount = 5
+                else:
+                    discount = 0
+            else:
+                discount = 0
+        else:
+            discount = 0
+    else:
+        discount = 0
+    return discount
+```
+
+### What made the original code complex?
+- **Deeply nested conditionals:** Six levels of nesting make it extremely
+  hard to follow the logic — you have to track every opening `if` to
+  understand what each branch covers
+- **Repeated `discount = 0`:** The default value is set in four separate
+  places, which is redundant and error-prone
+- **Verbose boolean check:** `== True` is unnecessary in Python —
+  `if user.get("is_active")` is cleaner and equivalent
+- **Repeated `user.get("years") is not None`:** The same check appears
+  twice for different membership levels
+- **No clear structure:** It is hard to see at a glance what the possible
+  outcomes are — you have to trace every branch to build a mental model
+
+---
+
+### ✅ Refactored Simple Version
+
+```python
+# Discount table: (membership_tier, min_years) -> discount_percent
+DISCOUNT_TABLE = {
+    ("gold", 3): 30,
+    ("gold", 0): 20,
+    ("silver", 3): 15,
+    ("silver", 0): 10,
+    ("bronze", 0): 5,
+}
+
+
+def get_user_discount(user: dict) -> int:
+    """
+    Return the discount percentage for a given user based on their
+    membership tier and years as a member.
+
+    Args:
+        user: A dictionary containing user details.
+
+    Returns:
+        An integer discount percentage (0 if not eligible).
+    """
+    if not user or not user.get("is_active"):
+        return 0
+
+    membership = user.get("membership")
+    years = user.get("years", 0)
+
+    if not membership:
+        return 0
+
+    min_years = 3 if years >= 3 else 0
+    return DISCOUNT_TABLE.get((membership, min_years), 0)
+```
+
+---
+
+### Reflection
+
+### What made the original code complex?
+The original code used deeply nested conditionals that made it almost
+impossible to follow without tracing every branch. The same default value
+(`discount = 0`) was set in four separate places, and the same `years`
+check was duplicated for each membership tier. There was no clear overview
+of what the possible outcomes were — you had to read the entire function
+to understand even the simplest case.
+
+### How did refactoring improve it?
+The refactored version reduced the function from 30 lines to 10 by making
+three key changes:
+
+1. **Guard clauses first:** Invalid or ineligible users are handled
+   immediately at the top with early returns, eliminating the need for
+   deeply nested checks and reducing the entire "invalid user" case to
+   two lines.
+
+2. **Lookup table instead of conditionals:** The discount logic is now
+   expressed as a dictionary (`DISCOUNT_TABLE`) that maps membership tier
+   and years to a discount percentage. This makes all possible outcomes
+   visible at a glance and eliminates the need for nested if/else entirely.
+
+3. **Single years check:** Instead of repeating the years check for each
+   membership tier, it is calculated once (`min_years = 3 if years >= 3
+   else 0`) and reused.
+
+The result reads cleanly from top to bottom — validate the user, get their
+membership and years, look up their discount. Adding a new membership tier
+now only requires adding one line to `DISCOUNT_TABLE` rather than adding
+another nested if/else block.
+
+### Key takeaway
+Complexity often comes from conditionals that grow over time without
+being restructured. Guard clauses, lookup tables, and early returns are
+powerful tools for flattening nested logic into something linear and
+readable. The goal of refactoring for simplicity is not to reduce line
+count, it is to reduce the mental effort required to understand the code.
