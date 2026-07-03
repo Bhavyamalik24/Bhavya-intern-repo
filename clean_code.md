@@ -942,3 +942,101 @@ could go wrong and fails gracefully with clear, actionable messages.
 Guard clauses are the most effective tool for this: handle the invalid
 cases first, then write the main logic with confidence that inputs are
 safe to use.
+
+---
+
+## Writing Unit Tests for Clean Code
+
+### Research: Why Unit Testing Matters
+Unit tests verify that individual functions or components work correctly
+in isolation. They act as a safety net — when you change code, tests
+tell you immediately if something broke. Well-tested code is also
+inherently cleaner because writing tests forces you to think about edge
+cases, input validation, and function responsibilities upfront.
+
+**Benefits of unit testing:**
+- Catches bugs early before they reach production
+- Makes refactoring safe — change code confidently knowing tests will
+  catch regressions
+- Serves as living documentation — tests show exactly how a function
+  is expected to behave
+- Forces small, focused functions — large monolithic functions are hard
+  to test, which encourages better design
+
+**Testing Framework Chosen: PyTest**
+PyTest is the most widely used Python testing framework. It is simple
+to write, provides clear output when tests fail, and requires no
+boilerplate setup.
+
+---
+
+### Function Tested
+Wrote unit tests for the `calculate_average_score` function from the
+error handling section — it has clear inputs, outputs, and edge cases
+that make it ideal for unit testing.
+
+The function and tests are in two separate files:
+- `clean_code_examples.py` — contains the function implementation
+- `test_calculate_average_score.py` — contains 12 PyTest unit tests
+
+---
+
+### Tests Written
+Tests covered:
+- Basic average calculation
+- Pass rate when all scores pass
+- Pass rate when no scores pass
+- Highest and lowest score detection
+- Single score input
+- Empty list raises ValueError
+- Non-numeric score raises TypeError
+- Score above 100 raises ValueError
+- Negative score raises ValueError
+- Invalid threshold raises ValueError
+- None input raises TypeError
+- Boundary score exactly at threshold counts as passing
+
+---
+
+### 📝 Reflection
+
+### How do unit tests help keep code clean?
+Unit tests enforce clean code in several ways:
+
+1. **They reward small, focused functions:** A function that does five
+   things at once is almost impossible to test cleanly. Writing tests
+   naturally pushes you toward single-responsibility functions with
+   clear inputs and outputs.
+
+2. **They catch regressions instantly:** When refactoring, tests
+   immediately confirm whether a change broke any existing behaviour
+   — no manual checking required.
+
+3. **They document expected behaviour:** Reading the test names alone
+   tells you exactly how the function should behave — what it returns
+   for normal inputs, what errors it raises for invalid ones, and how
+   it handles boundary conditions.
+
+4. **They make edge cases visible:** Writing the test for an empty list
+   or a None input forces you to think about whether the function
+   handles those cases — which is exactly how the guard clauses in the
+   error handling section came to be.
+
+### What issues did I find while testing?
+Writing the boundary test (`test_boundary_score_exactly_at_threshold`)
+revealed a subtle question: should a score exactly equal to the
+`passing_threshold` count as passing? The original function used
+`>= passing_threshold` which includes the boundary — confirming this
+was the correct and intended behaviour.
+
+The empty list test also confirmed that the guard clause raises the
+right error — without the test, it would be easy to assume the function
+handles this gracefully without actually verifying it.
+
+### Key takeaway
+Unit tests are not just about catching bugs — they are a design tool.
+Writing tests forces better function design, makes edge cases explicit,
+and gives developers the confidence to refactor without fear. A function
+without tests is a function you cannot safely change.
+
+---
